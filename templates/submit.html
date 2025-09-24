@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Project - AI Project Evaluator{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="fas fa-rocket me-2"></i>Submit Your Project
+                </h3>
+                <p class="mb-0 mt-2">Share your innovative solution with our AI-powered evaluation system</p>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="projectForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="project_name" class="form-label">
+                                    <i class="fas fa-tag me-1"></i>Project Name *
+                                </label>
+                                <input type="text" class="form-control" id="project_name" name="project_name" 
+                                       required placeholder="Enter your project name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="team_name" class="form-label">
+                                    <i class="fas fa-users me-1"></i>Team Name *
+                                </label>
+                                <input type="text" class="form-control" id="team_name" name="team_name" 
+                                       required placeholder="Enter your team name">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-align-left me-1"></i>Project Description *
+                        </label>
+                        <textarea class="form-control" id="description" name="description" rows="4" 
+                                  required placeholder="Describe your project, its purpose, and key features..."></textarea>
+                        <div class="form-text">Provide a comprehensive description of your project (minimum 100 characters)</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="github_url" class="form-label">
+                                    <i class="fab fa-github me-1"></i>GitHub Repository
+                                </label>
+                                <input type="url" class="form-control" id="github_url" name="github_url" 
+                                       placeholder="https://github.com/username/repository">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="demo_url" class="form-label">
+                                    <i class="fas fa-external-link-alt me-1"></i>Demo URL
+                                </label>
+                                <input type="url" class="form-control" id="demo_url" name="demo_url" 
+                                       placeholder="https://your-demo.com">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="tech_stack" class="form-label">
+                                    <i class="fas fa-code me-1"></i>Technology Stack
+                                </label>
+                                <input type="text" class="form-control" id="tech_stack" name="tech_stack" 
+                                       placeholder="e.g., Python, React, Snowflake, AI/ML">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="challenge_category" class="form-label">
+                                    <i class="fas fa-trophy me-1"></i>Challenge Category
+                                </label>
+                                <select class="form-select" id="challenge_category" name="challenge_category">
+                                    <option value="">Select a category</option>
+                                    <option value="fintech">FinTech Innovation</option>
+                                    <option value="sustainability">Sustainability</option>
+                                    <option value="social-impact">Social Impact</option>
+                                    <option value="ai-ml">AI/ML Solutions</option>
+                                    <option value="data-analytics">Data Analytics</option>
+                                    <option value="cybersecurity">Cybersecurity</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="additional_notes" class="form-label">
+                            <i class="fas fa-sticky-note me-1"></i>Additional Notes
+                        </label>
+                        <textarea class="form-control" id="additional_notes" name="additional_notes" rows="3" 
+                                  placeholder="Any additional information, special considerations, or notes about your project..."></textarea>
+                    </div>
+                    
+                    <!-- Evaluation Criteria Preview -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Evaluation Criteria
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <strong>Innovation (25%)</strong>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-primary" style="width: 25%"></div>
+                                        </div>
+                                        <small class="text-muted">Novelty and creativity</small>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Technical Excellence (30%)</strong>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-success" style="width: 30%"></div>
+                                        </div>
+                                        <small class="text-muted">Implementation quality</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-2">
+                                        <strong>Impact (25%)</strong>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" style="width: 25%"></div>
+                                        </div>
+                                        <small class="text-muted">Real-world potential</small>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Presentation (20%)</strong>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-info" style="width: 20%"></div>
+                                        </div>
+                                        <small class="text-muted">Clarity and documentation</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-outline-secondary me-md-2" onclick="resetForm()">
+                            <i class="fas fa-undo me-2"></i>Reset
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Project
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Submission Guidelines -->
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Submission Guidelines
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-check-circle text-success me-2"></i>What to Include:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Clear project description</li>
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Technology stack details</li>
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Working demo or prototype</li>
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>GitHub repository (if available)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-exclamation-triangle text-warning me-2"></i>Tips for Better Scores:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Focus on innovation and impact</li>
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Ensure technical quality</li>
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Provide clear documentation</li>
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Include real-world applications</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation and submission
+    document.getElementById('projectForm').addEventListener('submit', function(e) {
+        const submitBtn = document.getElementById('submitBtn');
+        const originalText = submitBtn.innerHTML;
+        
+        // Show loading state
+        submitBtn.innerHTML = '<span class="loading-spinner me-2"></span>Submitting...';
+        submitBtn.disabled = true;
+        
+        // Validate description length
+        const description = document.getElementById('description').value;
+        if (description.length < 100) {
+            e.preventDefault();
+            alert('Please provide a more detailed description (minimum 100 characters).');
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            return;
+        }
+        
+        // If form is valid, let it submit
+        setTimeout(() => {
+            if (!submitBtn.disabled) {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }, 10000); // Reset after 10 seconds if still loading
+    });
+    
+    // Character counter for description
+    document.getElementById('description').addEventListener('input', function() {
+        const length = this.value.length;
+        const minLength = 100;
+        const counter = document.getElementById('char-counter') || createCharCounter();
+        
+        counter.textContent = `${length}/${minLength} characters`;
+        counter.className = length >= minLength ? 'text-success' : 'text-warning';
+    });
+    
+    function createCharCounter() {
+        const counter = document.createElement('div');
+        counter.id = 'char-counter';
+        counter.className = 'form-text';
+        document.getElementById('description').parentNode.appendChild(counter);
+        return counter;
+    }
+    
+    // Reset form function
+    function resetForm() {
+        if (confirm('Are you sure you want to reset the form? All data will be lost.')) {
+            document.getElementById('projectForm').reset();
+        }
+    }
+    
+    // Auto-save form data to localStorage
+    const formInputs = document.querySelectorAll('#projectForm input, #projectForm textarea, #projectForm select');
+    formInputs.forEach(input => {
+        // Load saved data
+        const savedValue = localStorage.getItem(`project_${input.name}`);
+        if (savedValue) {
+            input.value = savedValue;
+        }
+        
+        // Save data on change
+        input.addEventListener('input', function() {
+            localStorage.setItem(`project_${this.name}`, this.value);
+        });
+    });
+    
+    // Clear saved data on successful submission
+    window.addEventListener('beforeunload', function() {
+        if (document.querySelector('.alert-success')) {
+            formInputs.forEach(input => {
+                localStorage.removeItem(`project_${input.name}`);
+            });
+        }
+    });
+</script>
+{% endblock %}

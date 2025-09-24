@@ -1,0 +1,400 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard - AI Project Evaluator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-4 fw-bold text-warning">
+                <i class="fas fa-trophy me-3"></i>Leaderboard
+            </h1>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary" onclick="refreshLeaderboard()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
+                <a href="{{ url_for('analytics') }}" class="btn btn-primary">
+                    <i class="fas fa-chart-bar me-2"></i>Analytics
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top 3 Podium -->
+{% if leaderboard %}
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0 text-center">
+                    <i class="fas fa-crown me-2"></i>Top 3 Projects
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row justify-content-center align-items-end">
+                    {% for project in leaderboard[:3] %}
+                    <div class="col-md-4 text-center">
+                        <div class="podium-item {% if loop.index == 1 %}first{% elif loop.index == 2 %}second{% else %}third{% endif %}">
+                            <div class="podium-rank">
+                                {% if loop.index == 1 %}
+                                    <i class="fas fa-crown fa-2x text-warning"></i>
+                                {% elif loop.index == 2 %}
+                                    <i class="fas fa-medal fa-2x text-secondary"></i>
+                                {% else %}
+                                    <i class="fas fa-award fa-2x text-warning"></i>
+                                {% endif %}
+                            </div>
+                            <div class="podium-score">
+                                <span class="display-6 fw-bold">{{ "%.1f"|format(project.OVERALL_SCORE|float) }}</span>
+                            </div>
+                            <div class="podium-info">
+                                <h5 class="fw-bold">{{ project.PROJECT_NAME }}</h5>
+                                <p class="text-muted mb-2">{{ project.TEAM_NAME }}</p>
+                                <div class="score-breakdown">
+                                    <small class="d-block">Innovation: {{ project.INNOVATION_SCORE }}/100</small>
+                                    <small class="d-block">Technical: {{ project.TECHNICAL_SCORE }}/100</small>
+                                    <small class="d-block">Impact: {{ project.IMPACT_SCORE }}/100</small>
+                                    <small class="d-block">Presentation: {{ project.PRESENTATION_SCORE }}/100</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Full Leaderboard -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-list-ol me-2"></i>Complete Rankings
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if leaderboard %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="60">Rank</th>
+                                    <th>Project</th>
+                                    <th>Team</th>
+                                    <th width="100">Overall</th>
+                                    <th width="80">Innovation</th>
+                                    <th width="80">Technical</th>
+                                    <th width="80">Impact</th>
+                                    <th width="80">Presentation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in leaderboard %}
+                                <tr class="leaderboard-row" data-rank="{{ loop.index }}">
+                                    <td>
+                                        <div class="rank-badge {% if loop.index <= 3 %}top-three{% endif %}">
+                                            {{ loop.index }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="project-info">
+                                            <h6 class="mb-1">{{ project.PROJECT_NAME }}</h6>
+                                            <small class="text-muted">Submitted recently</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="team-name">{{ project.TEAM_NAME }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="score-badge main-score">{{ "%.1f"|format(project.OVERALL_SCORE|float) }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="score-bar">
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-primary" style="width: {{ project.INNOVATION_SCORE }}%"></div>
+                                            </div>
+                                            <small class="text-muted">{{ project.INNOVATION_SCORE }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="score-bar">
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-success" style="width: {{ project.TECHNICAL_SCORE }}%"></div>
+                                            </div>
+                                            <small class="text-muted">{{ project.TECHNICAL_SCORE }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="score-bar">
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-warning" style="width: {{ project.IMPACT_SCORE }}%"></div>
+                                            </div>
+                                            <small class="text-muted">{{ project.IMPACT_SCORE }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="score-bar">
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-info" style="width: {{ project.PRESENTATION_SCORE }}%"></div>
+                                            </div>
+                                            <small class="text-muted">{{ project.PRESENTATION_SCORE }}</small>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-trophy fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No evaluations yet</h5>
+                        <p class="text-muted">Submit projects to see the leaderboard!</p>
+                        <a href="{{ url_for('submit_project') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Submit Project
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistics Sidebar -->
+    <div class="col-lg-4">
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Score Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="scoreDistributionChart" width="300" height="200"></canvas>
+            </div>
+        </div>
+        
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-trophy me-2"></i>Category Leaders
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if leaderboard %}
+                    {% set most_innovative = leaderboard|max(attribute='INNOVATION_SCORE') %}
+                    {% set best_technical = leaderboard|max(attribute='TECHNICAL_SCORE') %}
+                    {% set highest_impact = leaderboard|max(attribute='IMPACT_SCORE') %}
+                    {% set best_presentation = leaderboard|max(attribute='PRESENTATION_SCORE') %}
+                    
+                    <div class="category-leader mb-3">
+                        <h6><i class="fas fa-lightbulb text-warning me-2"></i>Most Innovative</h6>
+                        <p class="mb-1">{{ most_innovative.PROJECT_NAME }}</p>
+                        <small class="text-muted">{{ most_innovative.TEAM_NAME }}</small>
+                    </div>
+                    <div class="category-leader mb-3">
+                        <h6><i class="fas fa-code text-success me-2"></i>Best Technical</h6>
+                        <p class="mb-1">{{ best_technical.PROJECT_NAME }}</p>
+                        <small class="text-muted">{{ best_technical.TEAM_NAME }}</small>
+                    </div>
+                    <div class="category-leader mb-3">
+                        <h6><i class="fas fa-globe text-primary me-2"></i>Highest Impact</h6>
+                        <p class="mb-1">{{ highest_impact.PROJECT_NAME }}</p>
+                        <small class="text-muted">{{ highest_impact.TEAM_NAME }}</small>
+                    </div>
+                    <div class="category-leader">
+                        <h6><i class="fas fa-presentation text-info me-2"></i>Best Presentation</h6>
+                        <p class="mb-1">{{ best_presentation.PROJECT_NAME }}</p>
+                        <small class="text-muted">{{ best_presentation.TEAM_NAME }}</small>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">No data available</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>Recent Updates
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="recent-updates">
+                    <div class="update-item mb-2">
+                        <i class="fas fa-circle text-success me-2" style="font-size: 8px;"></i>
+                        <span>Leaderboard updated</span>
+                        <small class="text-muted d-block">Just now</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .podium-item {
+        margin-bottom: 20px;
+    }
+    
+    .podium-item.first {
+        transform: scale(1.1);
+    }
+    
+    .podium-item.second {
+        transform: scale(1.05);
+    }
+    
+    .podium-rank {
+        margin-bottom: 10px;
+    }
+    
+    .podium-score {
+        background: linear-gradient(45deg, #f59e0b, #fbbf24);
+        color: white;
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+    }
+    
+    .podium-info {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .score-breakdown {
+        font-size: 0.8em;
+    }
+    
+    .leaderboard-row:hover {
+        background-color: rgba(59, 130, 246, 0.05);
+        transform: translateX(5px);
+        transition: all 0.3s ease;
+    }
+    
+    .rank-badge.top-three {
+        background: linear-gradient(45deg, #f59e0b, #fbbf24);
+        color: white;
+    }
+    
+    .main-score {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+    
+    .score-bar {
+        min-width: 60px;
+    }
+    
+    .category-leader {
+        border-left: 3px solid #3b82f6;
+        padding-left: 10px;
+    }
+    
+    .update-item {
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 8px;
+    }
+    
+    .update-item:last-child {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Score distribution chart
+    {% if leaderboard %}
+    const ctx = document.getElementById('scoreDistributionChart').getContext('2d');
+    const scores = {{ leaderboard|map(attribute='OVERALL_SCORE')|list|tojson }};
+    
+    // Create score ranges
+    const ranges = {
+        '90-100': scores.filter(s => s >= 90).length,
+        '80-89': scores.filter(s => s >= 80 && s < 90).length,
+        '70-79': scores.filter(s => s >= 70 && s < 80).length,
+        '60-69': scores.filter(s => s >= 60 && s < 70).length,
+        'Below 60': scores.filter(s => s < 60).length
+    };
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(ranges),
+            datasets: [{
+                data: Object.values(ranges),
+                backgroundColor: [
+                    '#10b981',
+                    '#3b82f6',
+                    '#f59e0b',
+                    '#ef4444',
+                    '#6b7280'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+    {% endif %}
+    
+    // Refresh leaderboard function
+    function refreshLeaderboard() {
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loading-spinner me-2"></span>Refreshing...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+    }
+    
+    // Auto-refresh every 60 seconds
+    setInterval(() => {
+        location.reload();
+    }, 60000);
+    
+    // Add animation to leaderboard rows
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('.leaderboard-row');
+        rows.forEach((row, index) => {
+            setTimeout(() => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(20px)';
+                row.style.transition = 'all 0.5s ease';
+                
+                setTimeout(() => {
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, 100);
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}

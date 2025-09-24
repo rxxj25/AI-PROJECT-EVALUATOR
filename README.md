@@ -1,77 +1,264 @@
-# NatWest Hack4aCause Hackathon
+# AI-Powered Project Evaluator for NatWest Hackathon
 
-![badge-labs](https://user-images.githubusercontent.com/327285/230928932-7c75f8ed-e57b-41db-9fb7-a292a13a1e58.svg)
+A comprehensive AI-powered project evaluation system that integrates with Snowflake for real-time data management and uses Google's Gemini AI for intelligent project assessment.
 
-This repository was forked from [finos-labs/learnaix-h-2025](https://github.com/finos-labs/learnaix-h-2025).
+## 🚀 Features
 
-Please refer to the [HACK4ACAUSE-TEMPLATE_README.md](./HACK4ACAUSE-TEMPLATE_README.md) for complete submission instructions and project documentation requirements.
+### Core Functionality
+- **AI-Powered Evaluation**: Uses Google Gemini AI to evaluate projects across multiple criteria
+- **Real-time Snowflake Integration**: Seamless data upload and management in Snowflake
+- **Comprehensive Scoring**: Multi-dimensional evaluation (Innovation, Technical, Impact, Presentation)
+- **Live Dashboard**: Real-time project tracking and leaderboard
+- **Advanced Analytics**: Detailed insights and trend analysis
 
----
+### Key Components
+- **Project Submission Portal**: User-friendly interface for project submission
+- **AI Evaluation Engine**: Intelligent scoring using Gemini AI
+- **Real-time Metrics**: Live tracking of project performance
+- **Leaderboard System**: Dynamic ranking and competition tracking
+- **Analytics Dashboard**: Comprehensive data visualization and insights
 
-&nbsp;
+## 🏗️ Architecture
 
-Join us in a transformative AI hackathon focused on driving social impact in education and
-employability. Let’s work together to add the next game changer feature on to Snowflake
-LearnAIx platform, the AI-assisted, open-source learning system that you all will be helping
-build via this hackathon.
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Web Interface │    │  AI Evaluator   │    │   Snowflake     │
+│                 │    │                 │    │                 │
+│  - Dashboard    │◄──►│  - Gemini AI    │◄──►│  - Projects     │
+│  - Submission   │    │  - Scoring      │    │  - Evaluations  │
+│  - Analytics    │    │  - Feedback     │    │  - Metrics      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
 
-## Purpose:
+## 🛠️ Technology Stack
 
-With LearnAIx, our goal is to develop a scalable and accessible platform that can be
-leveraged by non-profits and academies alike to enhance learning experiences and open
-doors of opportunities to all learners.
+- **Backend**: Python Flask
+- **Database**: Snowflake (Cloud Data Warehouse)
+- **AI Engine**: Google Gemini Pro
+- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
+- **Charts**: Chart.js
+- **Icons**: Font Awesome
 
-Through your involvement in this hackathon, you will get the opportunity to socialise and
-network with like-minded enthusiasts who believe in open-source enablers for community
-benefit. You will use AI to improve learning solutions in the education sector.
+## 📋 Prerequisites
 
-## Objective:
+- Python 3.8+
+- Snowflake account (provided for hackathon)
+- Google Gemini API key
+- Modern web browser
 
-To create AI enabled Moodle plugins on existing LearnAIx alpha solution on Snowflake public
-platform. Shortlisted plugins will feature in the LearnAIx beta version that will be available to consume for free.
+## 🚀 Quick Start
 
-### Integrations & Tech stack
+### 1. Clone and Setup
+```bash
+git clone <repository-url>
+cd ai-project-evaluator
+pip install -r requirements.txt
+```
 
-Plugins: Custom Moodle plugins using PHP, JavaScript, and REST APIs
-AI Integration: OpenAI APIs, LangChain, or Python-based microservices
-Hosting: Snowflake
+### 2. Configuration
+The system is pre-configured with your hackathon credentials:
+- **Snowflake Account**: `sfsehol-natwest_learnaix_hack4acause_zrkzae`
+- **Username**: `USER`
+- **Password**: `sn0wf@ll`
+- **Gemini API Key**: `AIzaSyBrVOt06duPLytNq6nYIhTByqJIaW2xCMk`
 
-## How to get started with Plugin Development
+### 3. Run the Application
+```bash
+python app.py
+```
 
-- Open the provided repo
-- Navigate to `assets` folder
-- ### Step 1: Choose your runtime
+### 4. Access the Application
+Open your browser and navigate to: `http://localhost:5000`
 
-#### You can choose to run it in one of two ways:
+## 📊 Evaluation Criteria
 
-##### Option 1: Run Plugin on Snowflake
+The AI evaluates projects across four key dimensions:
 
-- No need to install Moodle
-- you can run the plugin directly inside your Snowflake environment.
-- _Note:_ If you only want to use Snowflake, you can _skip the local setup steps_ below.
+| Criteria | Weight | Description |
+|----------|--------|-------------|
+| **Innovation** | 25% | Novelty and creativity of the solution |
+| **Technical Excellence** | 30% | Quality of implementation and code |
+| **Impact** | 25% | Potential for real-world change |
+| **Presentation** | 20% | Clarity and documentation quality |
 
-##### Option 2: Run Plugin Locally with Moodle
+## 🎯 How It Works
 
-- Install Moodle on your local machine.
-- Follow the setup guide for your OS:
-  - [Windows Guide](./example/moodle-local-setup/setup-Windows.md)
-  - [macOS/iOS Guide](./example/moodle-local-setup/setup-MacOS.md)
-- Complete the setup steps as per the guide.
+### 1. Project Submission
+- Teams submit projects through the web interface
+- Project data is immediately stored in Snowflake
+- AI evaluation process is triggered automatically
 
-- ### Step 2: Create Your Plugin
-  Once you’ve decided where to run the plugin (Snowflake or Moodle), the next step is to _create your plugin_.
+### 2. AI Evaluation
+- Gemini AI analyzes project details
+- Scores are generated for each criterion
+- Comprehensive feedback is provided
+- Results are stored in real-time
 
-We have provided _different plugin templates_ inside the repository:
+### 3. Real-time Updates
+- Dashboard updates automatically
+- Leaderboard reflects current standings
+- Analytics provide ongoing insights
 
-- _With PHP support_ → See the [with php](./example/plugin-development-templates/with-php/)
-- _Without PHP support_ → See the [without php](./example/plugin-development-templates/without-php/)
+## 📈 Key Features
 
-Explore these folders and pick the template that best fits your needs.
+### Dashboard
+- **Project Overview**: Total projects, evaluation status, average scores
+- **Recent Activity**: Latest submissions and evaluations
+- **Quick Actions**: Easy navigation to key functions
 
-## License
+### Project Submission
+- **Comprehensive Form**: Detailed project information collection
+- **Real-time Validation**: Instant feedback on form completion
+- **Auto-save**: Prevents data loss during submission
 
-&copy; Copyright 2025 FINOS
+### Leaderboard
+- **Top 3 Podium**: Visual representation of top performers
+- **Complete Rankings**: Full list with detailed scores
+- **Category Leaders**: Best performers in each evaluation area
 
-Distributed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+### Analytics
+- **Score Trends**: Visual representation of performance over time
+- **Category Analysis**: Breakdown by evaluation criteria
+- **AI Insights**: Intelligent analysis and recommendations
 
-SPDX-License-Identifier: [Apache-2.0](https://spdx.org/licenses/Apache-2.0)
+## 🔧 API Endpoints
+
+### Core Endpoints
+- `GET /` - Main dashboard
+- `GET /submit` - Project submission form
+- `POST /submit` - Submit new project
+- `GET /project/<id>` - Project details
+- `GET /leaderboard` - Current rankings
+- `GET /analytics` - Analytics dashboard
+
+### API Endpoints
+- `POST /api/evaluate` - Trigger AI evaluation
+- `GET /api/metrics/<project_id>` - Get project metrics
+- `GET /api/insights` - Generate AI insights
+
+## 🗄️ Database Schema
+
+### Projects Table
+```sql
+CREATE TABLE projects (
+    project_id VARCHAR(50) PRIMARY KEY,
+    project_name VARCHAR(255) NOT NULL,
+    description TEXT,
+    team_name VARCHAR(255),
+    submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    status VARCHAR(50) DEFAULT 'submitted',
+    raw_data VARIANT
+);
+```
+
+### Evaluations Table
+```sql
+CREATE TABLE evaluations (
+    evaluation_id VARCHAR(50) PRIMARY KEY,
+    project_id VARCHAR(50),
+    innovation_score INTEGER,
+    technical_score INTEGER,
+    impact_score INTEGER,
+    presentation_score INTEGER,
+    overall_score DECIMAL(5,2),
+    feedback TEXT,
+    evaluation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    evaluator_type VARCHAR(50) DEFAULT 'ai',
+    detailed_scores VARIANT
+);
+```
+
+### Real-time Metrics Table
+```sql
+CREATE TABLE real_time_metrics (
+    metric_id VARCHAR(50) PRIMARY KEY,
+    project_id VARCHAR(50),
+    metric_type VARCHAR(100),
+    metric_value DECIMAL(10,4),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    metadata VARIANT
+);
+```
+
+## 🎨 UI/UX Features
+
+### Modern Design
+- **Gradient Backgrounds**: Eye-catching visual appeal
+- **Glass Morphism**: Modern translucent design elements
+- **Responsive Layout**: Works on all device sizes
+- **Smooth Animations**: Engaging user interactions
+
+### User Experience
+- **Intuitive Navigation**: Easy-to-use interface
+- **Real-time Feedback**: Instant status updates
+- **Auto-refresh**: Live data updates
+- **Error Handling**: Graceful error management
+
+## 🔒 Security Features
+
+- **Input Validation**: Comprehensive form validation
+- **SQL Injection Protection**: Parameterized queries
+- **XSS Prevention**: Output sanitization
+- **Error Handling**: Secure error messages
+
+## 📱 Mobile Responsiveness
+
+The application is fully responsive and optimized for:
+- **Desktop**: Full-featured experience
+- **Tablet**: Adapted layout and interactions
+- **Mobile**: Touch-optimized interface
+
+## 🚀 Deployment
+
+### Local Development
+```bash
+python app.py
+```
+
+### Production Deployment
+```bash
+gunicorn -w 4 -b 0.0.0.0:5000 app:app
+```
+
+## 🎯 Hackathon Advantages
+
+### For Judges
+- **Consistent Evaluation**: AI ensures fair and consistent scoring
+- **Comprehensive Analysis**: Multi-dimensional project assessment
+- **Real-time Insights**: Live tracking of all submissions
+- **Detailed Feedback**: Actionable insights for participants
+
+### For Participants
+- **Fair Assessment**: Objective AI evaluation
+- **Immediate Feedback**: Instant scoring and feedback
+- **Transparent Process**: Clear evaluation criteria
+- **Competitive Spirit**: Live leaderboard and rankings
+
+### For Organizers
+- **Efficient Management**: Automated evaluation process
+- **Data Analytics**: Comprehensive insights and trends
+- **Scalable Solution**: Handles any number of submissions
+- **Professional Presentation**: Polished, modern interface
+
+## 🏆 Winning Features
+
+1. **AI-Powered Intelligence**: Advanced AI evaluation using Gemini
+2. **Real-time Integration**: Seamless Snowflake data management
+3. **Professional UI/UX**: Modern, responsive design
+4. **Comprehensive Analytics**: Deep insights and visualizations
+5. **Scalable Architecture**: Enterprise-ready solution
+6. **Hackathon Focused**: Built specifically for competition evaluation
+
+## 📞 Support
+
+For technical support or questions during the hackathon:
+- Check the application logs for error details
+- Ensure all dependencies are installed
+- Verify Snowflake connectivity
+- Confirm Gemini API key is valid
+
+## 🎉 Ready to Win!
+
+This AI-powered project evaluator is designed to give you a competitive edge in the NatWest Hackathon. With its advanced AI capabilities, real-time data integration, and professional presentation, it demonstrates innovation, technical excellence, and real-world impact.
+
+**Good luck with your hackathon submission!** 🚀

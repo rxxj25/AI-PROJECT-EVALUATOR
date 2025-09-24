@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - AI Project Evaluator{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6 text-center">
+        <div class="error-page">
+            <i class="fas fa-server fa-5x text-danger mb-4"></i>
+            <h1 class="display-1 fw-bold text-danger">500</h1>
+            <h2 class="mb-4">Internal Server Error</h2>
+            <p class="lead text-muted mb-4">
+                Something went wrong on our end. We're working to fix this issue.
+            </p>
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-home me-2"></i>Go Home
+                </a>
+                <button onclick="location.reload()" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-sync-alt me-2"></i>Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.PROJECT_NAME }} - Project Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="display-5 fw-bold text-primary">{{ project.PROJECT_NAME }}</h1>
+                <p class="text-muted mb-0">by {{ project.TEAM_NAME }}</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary" onclick="refreshProject()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Project Overview -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Project Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-tag me-2"></i>Project Name</h6>
+                        <p class="mb-3">{{ project.PROJECT_NAME }}</p>
+                        
+                        <h6><i class="fas fa-users me-2"></i>Team</h6>
+                        <p class="mb-3">{{ project.TEAM_NAME }}</p>
+                        
+                        <h6><i class="fas fa-calendar me-2"></i>Submitted</h6>
+                        <p class="mb-3">{{ project.SUBMISSION_DATE.strftime('%B %d, %Y at %I:%M %p') if project.SUBMISSION_DATE else 'N/A' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-info-circle me-2"></i>Status</h6>
+                        <p class="mb-3">
+                            {% if project.OVERALL_SCORE %}
+                                <span class="badge bg-success fs-6">Evaluated</span>
+                            {% else %}
+                                <span class="badge bg-warning fs-6">Pending Evaluation</span>
+                            {% endif %}
+                        </p>
+                        
+                        <h6><i class="fas fa-link me-2"></i>Links</h6>
+                        <div class="mb-3">
+                            {% if project.RAW_DATA %}
+                                {% set raw_data = project.RAW_DATA %}
+                                {% if raw_data.github_url %}
+                                    <a href="{{ raw_data.github_url }}" target="_blank" class="btn btn-sm btn-outline-dark me-2">
+                                        <i class="fab fa-github me-1"></i>GitHub
+                                    </a>
+                                {% endif %}
+                                {% if raw_data.demo_url %}
+                                    <a href="{{ raw_data.demo_url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-external-link-alt me-1"></i>Demo
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <h6><i class="fas fa-align-left me-2"></i>Description</h6>
+                <div class="project-description">
+                    {{ project.DESCRIPTION|replace('\n', '<br>')|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Overall Score Card -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-success text-white text-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-star me-2"></i>Overall Score
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                {% if project.OVERALL_SCORE %}
+                    <div class="overall-score-display">
+                        <span class="display-1 fw-bold text-success">{{ "%.1f"|format(project.OVERALL_SCORE|float) }}</span>
+                        <div class="score-out-of">out of 100</div>
+                    </div>
+                    <div class="score-grade mt-3">
+                        {% set score = project.OVERALL_SCORE|float %}
+                        {% if score >= 90 %}
+                            <span class="badge bg-success fs-6">Excellent</span>
+                        {% elif score >= 80 %}
+                            <span class="badge bg-primary fs-6">Very Good</span>
+                        {% elif score >= 70 %}
+                            <span class="badge bg-warning fs-6">Good</span>
+                        {% elif score >= 60 %}
+                            <span class="badge bg-info fs-6">Fair</span>
+                        {% else %}
+                            <span class="badge bg-secondary fs-6">Needs Improvement</span>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">Evaluation in Progress</h6>
+                        <p class="text-muted">AI is analyzing your project...</p>
+                        <div class="loading-spinner mx-auto"></div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Scores -->
+{% if project.OVERALL_SCORE %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Detailed Evaluation Scores
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="score-category">
+                            <div class="score-header">
+                                <i class="fas fa-lightbulb text-warning me-2"></i>
+                                <h6>Innovation</h6>
+                            </div>
+                            <div class="score-value">{{ project.INNOVATION_SCORE }}/100</div>
+                            <div class="progress mb-2" style="height: 8px;">
+                                <div class="progress-bar bg-warning" style="width: {{ project.INNOVATION_SCORE }}%"></div>
+                            </div>
+                            <small class="text-muted">Novelty and creativity</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="score-category">
+                            <div class="score-header">
+                                <i class="fas fa-code text-success me-2"></i>
+                                <h6>Technical</h6>
+                            </div>
+                            <div class="score-value">{{ project.TECHNICAL_SCORE }}/100</div>
+                            <div class="progress mb-2" style="height: 8px;">
+                                <div class="progress-bar bg-success" style="width: {{ project.TECHNICAL_SCORE }}%"></div>
+                            </div>
+                            <small class="text-muted">Implementation quality</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="score-category">
+                            <div class="score-header">
+                                <i class="fas fa-globe text-primary me-2"></i>
+                                <h6>Impact</h6>
+                            </div>
+                            <div class="score-value">{{ project.IMPACT_SCORE }}/100</div>
+                            <div class="progress mb-2" style="height: 8px;">
+                                <div class="progress-bar bg-primary" style="width: {{ project.IMPACT_SCORE }}%"></div>
+                            </div>
+                            <small class="text-muted">Real-world potential</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="score-category">
+                            <div class="score-header">
+                                <i class="fas fa-presentation text-info me-2"></i>
+                                <h6>Presentation</h6>
+                            </div>
+                            <div class="score-value">{{ project.PRESENTATION_SCORE }}/100</div>
+                            <div class="progress mb-2" style="height: 8px;">
+                                <div class="progress-bar bg-info" style="width: {{ project.PRESENTATION_SCORE }}%"></div>
+                            </div>
+                            <small class="text-muted">Clarity and documentation</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Feedback -->
+{% if project.FEEDBACK %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-robot me-2"></i>AI Evaluation Feedback
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="feedback-content">
+                    {{ project.FEEDBACK|replace('\n', '<br>')|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+
+<!-- Real-time Metrics -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Real-time Metrics
+                    <span class="badge bg-light text-success ms-2 pulse">LIVE</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="metrics-container">
+                    {% if metrics %}
+                        <div class="row">
+                            {% for metric in metrics[:6] %}
+                            <div class="col-md-4 mb-3">
+                                <div class="metric-item">
+                                    <div class="metric-label">{{ metric.METRIC_TYPE }}</div>
+                                    <div class="metric-value">{{ "%.2f"|format(metric.METRIC_VALUE|float) }}</div>
+                                    <div class="metric-time">{{ metric.TIMESTAMP.strftime('%H:%M:%S') if metric.TIMESTAMP else 'N/A' }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No metrics available</h6>
+                            <p class="text-muted">Metrics will appear here as the project is evaluated.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .overall-score-display {
+        margin: 20px 0;
+    }
+    
+    .score-out-of {
+        font-size: 1.2em;
+        color: #6b7280;
+        margin-top: -10px;
+    }
+    
+    .score-category {
+        text-align: center;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .score-category:hover {
+        background: rgba(255, 255, 255, 0.8);
+        transform: translateY(-2px);
+    }
+    
+    .score-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+    
+    .score-value {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #1f2937;
+        margin-bottom: 10px;
+    }
+    
+    .feedback-content {
+        line-height: 1.8;
+        font-size: 1.1em;
+    }
+    
+    .metric-item {
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .metric-item:hover {
+        background: rgba(255, 255, 255, 0.8);
+        transform: translateY(-2px);
+    }
+    
+    .metric-label {
+        font-size: 0.9em;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .metric-value {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #1f2937;
+        margin: 5px 0;
+    }
+    
+    .metric-time {
+        font-size: 0.8em;
+        color: #9ca3af;
+    }
+    
+    .project-description {
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 20px;
+        line-height: 1.6;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Refresh project data
+    function refreshProject() {
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loading-spinner me-2"></span>Refreshing...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+    }
+    
+    // Auto-refresh metrics every 30 seconds
+    setInterval(() => {
+        fetch(`/api/metrics/{{ project.PROJECT_ID }}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.metrics) {
+                    updateMetricsDisplay(data.metrics);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching metrics:', error);
+            });
+    }, 30000);
+    
+    function updateMetricsDisplay(metrics) {
+        const container = document.getElementById('metrics-container');
+        if (metrics.length === 0) return;
+        
+        const metricsHtml = `
+            <div class="row">
+                ${metrics.slice(0, 6).map(metric => `
+                    <div class="col-md-4 mb-3">
+                        <div class="metric-item">
+                            <div class="metric-label">${metric.METRIC_TYPE}</div>
+                            <div class="metric-value">${parseFloat(metric.METRIC_VALUE).toFixed(2)}</div>
+                            <div class="metric-time">${new Date(metric.TIMESTAMP).toLocaleTimeString()}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        container.innerHTML = metricsHtml;
+    }
+    
+    // Add smooth animations
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}

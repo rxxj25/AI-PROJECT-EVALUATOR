@@ -1,0 +1,465 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - AI Project Evaluator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-4 fw-bold text-info">
+                <i class="fas fa-chart-bar me-3"></i>Analytics Dashboard
+            </h1>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary" onclick="refreshAnalytics()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
+                <button class="btn btn-primary" onclick="generateInsights()">
+                    <i class="fas fa-brain me-2"></i>AI Insights
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Metrics Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="metric-card">
+            <i class="fas fa-project-diagram fa-2x mb-2"></i>
+            <h5>Total Projects</h5>
+            <div class="metric-value">{{ total_projects }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <i class="fas fa-check-circle fa-2x mb-2"></i>
+            <h5>Evaluated</h5>
+            <div class="metric-value">{{ evaluated_projects }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <i class="fas fa-star fa-2x mb-2"></i>
+            <h5>Average Score</h5>
+            <div class="metric-value">{{ avg_score }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <i class="fas fa-percentage fa-2x mb-2"></i>
+            <h5>Completion Rate</h5>
+            <div class="metric-value">
+                {% if total_projects > 0 %}
+                    {{ "%.1f"|format((evaluated_projects / total_projects) * 100) }}%
+                {% else %}
+                    0%
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Score Trends
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="scoreTrendsChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Category Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Analytics -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Score Distribution by Category
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryScoresChart" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-trophy me-2"></i>Top Performers
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if leaderboard %}
+                    {% for project in leaderboard[:5] %}
+                    <div class="top-performer mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ project.PROJECT_NAME }}</h6>
+                                <small class="text-muted">{{ project.TEAM_NAME }}</small>
+                            </div>
+                            <span class="score-badge">{{ "%.1f"|format(project.OVERALL_SCORE|float) }}</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 4px;">
+                            <div class="progress-bar bg-primary" style="width: {{ project.OVERALL_SCORE }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center">No data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Insights Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-gradient text-white" style="background: linear-gradient(45deg, #667eea, #764ba2);">
+                <h5 class="mb-0">
+                    <i class="fas fa-brain me-2"></i>AI-Generated Insights
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="insights-content">
+                    <div class="text-center py-4">
+                        <i class="fas fa-robot fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">Click "AI Insights" to generate comprehensive analysis</h6>
+                        <p class="text-muted">Our AI will analyze all project data and provide valuable insights about trends, patterns, and recommendations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Real-time Statistics -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-sync-alt me-2"></i>Real-time Statistics
+                    <span class="badge bg-light text-success ms-2 pulse">LIVE</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-item text-center">
+                            <h4 class="text-primary" id="live-projects">{{ total_projects }}</h4>
+                            <p class="text-muted mb-0">Total Projects</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item text-center">
+                            <h4 class="text-success" id="live-evaluated">{{ evaluated_projects }}</h4>
+                            <p class="text-muted mb-0">Evaluated</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item text-center">
+                            <h4 class="text-warning" id="live-avg-score">{{ avg_score }}</h4>
+                            <p class="text-muted mb-0">Avg Score</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item text-center">
+                            <h4 class="text-info" id="live-completion">
+                                {% if total_projects > 0 %}
+                                    {{ "%.1f"|format((evaluated_projects / total_projects) * 100) }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </h4>
+                            <p class="text-muted mb-0">Completion</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .top-performer {
+        border-left: 3px solid #3b82f6;
+        padding-left: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .top-performer:hover {
+        background-color: rgba(59, 130, 246, 0.05);
+        border-left-color: #1d4ed8;
+    }
+    
+    .stat-item {
+        padding: 20px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.5);
+        margin: 10px 0;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-item:hover {
+        background: rgba(255, 255, 255, 0.8);
+        transform: translateY(-2px);
+    }
+    
+    #insights-content {
+        min-height: 200px;
+    }
+    
+    .insight-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        border-left: 4px solid #3b82f6;
+    }
+    
+    .insight-title {
+        color: #1e3a8a;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    
+    .insight-content {
+        line-height: 1.6;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize charts
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeCharts();
+    });
+    
+    function initializeCharts() {
+        // Score Trends Chart
+        const trendsCtx = document.getElementById('scoreTrendsChart').getContext('2d');
+        {% if leaderboard %}
+        const scores = {{ leaderboard|map(attribute='OVERALL_SCORE')|list|tojson }};
+        const labels = {{ leaderboard|map(attribute='PROJECT_NAME')|list|tojson }};
+        
+        new Chart(trendsCtx, {
+            type: 'line',
+            data: {
+                labels: labels.slice(0, 10), // Show top 10
+                datasets: [{
+                    label: 'Overall Score',
+                    data: scores.slice(0, 10),
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // Category Distribution Chart
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        const categories = ['Innovation', 'Technical', 'Impact', 'Presentation'];
+        const avgScores = [
+            {{ leaderboard|map(attribute='INNOVATION_SCORE')|list|sum / leaderboard|length if leaderboard else 0 }},
+            {{ leaderboard|map(attribute='TECHNICAL_SCORE')|list|sum / leaderboard|length if leaderboard else 0 }},
+            {{ leaderboard|map(attribute='IMPACT_SCORE')|list|sum / leaderboard|length if leaderboard else 0 }},
+            {{ leaderboard|map(attribute='PRESENTATION_SCORE')|list|sum / leaderboard|length if leaderboard else 0 }}
+        ];
+        
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: categories,
+                datasets: [{
+                    data: avgScores,
+                    backgroundColor: [
+                        '#f59e0b',
+                        '#10b981',
+                        '#3b82f6',
+                        '#8b5cf6'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        
+        // Category Scores Chart
+        const categoryScoresCtx = document.getElementById('categoryScoresChart').getContext('2d');
+        new Chart(categoryScoresCtx, {
+            type: 'bar',
+            data: {
+                labels: categories,
+                datasets: [{
+                    label: 'Average Score',
+                    data: avgScores,
+                    backgroundColor: [
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(139, 92, 246, 0.8)'
+                    ],
+                    borderColor: [
+                        '#f59e0b',
+                        '#10b981',
+                        '#3b82f6',
+                        '#8b5cf6'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        {% endif %}
+    }
+    
+    // Refresh analytics
+    function refreshAnalytics() {
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loading-spinner me-2"></span>Refreshing...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+    }
+    
+    // Generate AI insights
+    function generateInsights() {
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loading-spinner me-2"></span>Generating...';
+        btn.disabled = true;
+        
+        const insightsContent = document.getElementById('insights-content');
+        insightsContent.innerHTML = `
+            <div class="text-center py-4">
+                <div class="loading-spinner" style="width: 40px; height: 40px; border-width: 4px;"></div>
+                <p class="mt-3 text-muted">AI is analyzing project data and generating insights...</p>
+            </div>
+        `;
+        
+        fetch('/api/insights')
+            .then(response => response.json())
+            .then(data => {
+                if (data.insights) {
+                    insightsContent.innerHTML = `
+                        <div class="insight-section">
+                            <div class="insight-title">
+                                <i class="fas fa-lightbulb me-2"></i>Comprehensive Analysis
+                            </div>
+                            <div class="insight-content">
+                                ${data.insights.replace(/\n/g, '<br>')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    insightsContent.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Unable to generate insights at this time. Please try again later.
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                insightsContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Error generating insights: ${error.message}
+                    </div>
+                `;
+            })
+            .finally(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+    }
+    
+    // Auto-refresh every 2 minutes
+    setInterval(() => {
+        location.reload();
+    }, 120000);
+    
+    // Simulate real-time updates
+    setInterval(() => {
+        // Update live statistics with subtle animations
+        const elements = ['live-projects', 'live-evaluated', 'live-avg-score', 'live-completion'];
+        elements.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    element.style.transform = 'scale(1)';
+                }, 200);
+            }
+        });
+    }, 30000);
+</script>
+{% endblock %}
